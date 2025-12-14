@@ -1,0 +1,121 @@
+import java.util.*;
+
+public class CustomerServiceSystem {
+
+    static Queue<Customer> normalQueue = new LinkedList<>();
+    static PriorityQueue<Customer> priorityQueue =
+            new PriorityQueue<>(Comparator.comparingInt(c -> c.priority));
+    static Stack<Customer> serviceHistory = new Stack<>();
+
+    static Scanner sc = new Scanner(System.in);
+    static int customerId = 1;
+
+    public static void main(String[] args) {
+
+        while (true) {
+            System.out.println("\n=== CUSTOMER SERVICE SYSTEM ===");
+            System.out.println("1. Add Customer Request");
+            System.out.println("2. Serve Customer");
+            System.out.println("3. Display Waiting Customers");
+            System.out.println("4. View Service History");
+            System.out.println("5. Exit");
+            System.out.print("Enter choice: ");
+
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1:
+                    addCustomer();
+                    break;
+                case 2:
+                    serveCustomer();
+                    break;
+                case 3:
+                    displayCustomers();
+                    break;
+                case 4:
+                    viewHistory();
+                    break;
+                case 5:
+                    System.out.println("Exiting system...");
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice!");
+            }
+        }
+    }
+
+    // Add customer
+    static void addCustomer() {
+        System.out.print("Enter customer name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter issue description: ");
+        String issue = sc.nextLine();
+
+        System.out.print("Enter priority (1-High, 2-Medium, 3-Low): ");
+        int priority = sc.nextInt();
+
+        Customer customer = new Customer(customerId++, name, issue, priority);
+
+        if (priority == 1) {
+            priorityQueue.add(customer);
+        } else {
+            normalQueue.add(customer);
+        }
+
+        System.out.println("Customer added successfully.");
+    }
+
+    // Serve customer
+    static void serveCustomer() {
+        Customer servedCustomer = null;
+
+        if (!priorityQueue.isEmpty()) {
+            servedCustomer = priorityQueue.poll();
+        } else if (!normalQueue.isEmpty()) {
+            servedCustomer = normalQueue.poll();
+        }
+
+        if (servedCustomer != null) {
+            serviceHistory.push(servedCustomer);
+            System.out.println("Serving: " + servedCustomer);
+        } else {
+            System.out.println("No customers waiting.");
+        }
+    }
+
+    // Display waiting customers
+    static void displayCustomers() {
+        System.out.println("\n--- High Priority Customers ---");
+        if (priorityQueue.isEmpty()) {
+            System.out.println("None");
+        } else {
+            for (Customer c : priorityQueue) {
+                System.out.println(c);
+            }
+        }
+
+        System.out.println("\n--- Normal Customers ---");
+        if (normalQueue.isEmpty()) {
+            System.out.println("None");
+        } else {
+            for (Customer c : normalQueue) {
+                System.out.println(c);
+            }
+        }
+    }
+
+    // View service history
+    static void viewHistory() {
+        System.out.println("\n--- Service History ---");
+        if (serviceHistory.isEmpty()) {
+            System.out.println("No customers served yet.");
+        } else {
+            for (Customer c : serviceHistory) {
+                System.out.println(c);
+            }
+        }
+    }
+}
